@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AutoPager 设置</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">📖</span>
+      <span class="brand-name">AutoPager</span>
+    </div>
+
+    <div class="master-row">
+      <div class="row-text">
+        <div class="row-title">启用 AutoPager</div>
+        <div class="row-desc">总开关，关闭后在所有页面停止工作</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="globalEnabled">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+
+    <nav class="nav">
+      <a href="#exclude" class="nav-item" data-target="exclude"><span class="nav-icon">🚫</span>排除页面</a>
+      <a href="#behavior" class="nav-item" data-target="behavior"><span class="nav-icon">⚙️</span>翻页行为</a>
+      <a href="#ui" class="nav-item" data-target="ui"><span class="nav-icon">🎨</span>界面外观</a>
+      <a href="#siteinfo" class="nav-item" data-target="siteinfo"><span class="nav-icon">🗂️</span>站点规则库</a>
+      <a href="#data" class="nav-item" data-target="data"><span class="nav-icon">💾</span>数据管理</a>
+    </nav>
+
+    <div class="sidebar-footer">AutoPager v1.0.0</div>
+  </aside>
+
+  <main class="content">
+
+    <section id="exclude" class="card">
+      <div class="card-head">
+        <span class="card-icon">🚫</span>
+        <div>
+          <h2>排除页面</h2>
+          <p class="card-desc">在下方名单中的网址不会启用自动翻页，支持通配符(*)和正则表达式，每行一条规则。</p>
+        </div>
+      </div>
+      <div class="example-list">
+        <code>http://www.example.com/search?*</code>
+        <code>/[^.]+\.example\.com\//</code>
+      </div>
+      <textarea id="excludePatterns" rows="7" placeholder="每行一条排除规则，例如：https://www.example.com/*"></textarea>
+      <div class="card-actions">
+        <button id="saveExclude" class="btn btn-primary">保存排除规则</button>
+        <span id="saveExcludeStatus" class="status-text"></span>
+      </div>
+    </section>
+
+    <section id="behavior" class="card">
+      <div class="card-head">
+        <span class="card-icon">⚙️</span>
+        <div>
+          <h2>翻页行为</h2>
+          <p class="card-desc">控制自动翻页的触发时机与加载方式。</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">触发加载的距离</div>
+          <div class="row-desc">滚动到距页面底部多少像素时开始加载下一页，数值越大加载越提前</div>
+        </div>
+        <div class="row-control">
+          <input type="number" id="distance" min="0" step="50" class="num-input">
+          <span class="unit">px</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">在新标签页打开拼接内容中的链接</div>
+          <div class="row-desc">避免点击拼接页面里的链接时丢失当前滚动位置</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="openInNewTab">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">修复滚动溢出</div>
+          <div class="row-desc">缓解快速滚动到底部时出现的空白或回弹跳动</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="fixScrollOver">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">单篇文章内禁用内置规则跳转</div>
+          <div class="row-desc">只继续加载同一篇文章的分页内容，不自动跳转到规则库中定义的下一篇文章</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="suppressSiteinfoSinglePost">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">启用预加载</div>
+          <div class="row-desc">提前在后台抓取下一页，翻页更流畅，但会增加流量消耗，请谨慎开启</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="usePrefetch">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+    </section>
+
+    <section id="ui" class="card">
+      <div class="card-head">
+        <span class="card-icon">🎨</span>
+        <div>
+          <h2>界面外观</h2>
+          <p class="card-desc">调整页面右上角悬浮图标与拼接效果的显示方式。</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">右上角图标显示方式</div>
+          <div class="row-desc">选择悬浮控制图标何时可见</div>
+        </div>
+        <div class="segmented" id="iconVisibilityGroup">
+          <input type="radio" name="iconVisibility" value="show" id="iv-show" class="seg-input">
+          <label for="iv-show" class="seg-label">显示</label>
+          <input type="radio" name="iconVisibility" value="hide" id="iv-hide" class="seg-input">
+          <label for="iv-hide" class="seg-label">隐藏</label>
+          <input type="radio" name="iconVisibility" value="mouseover" id="iv-mouseover" class="seg-input">
+          <label for="iv-mouseover" class="seg-label">移入显示</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">图标透明度</div>
+        </div>
+        <div class="row-control">
+          <input type="range" id="iconOpacity" min="0" max="1" step="0.05" class="slider">
+          <span id="iconOpacityVal" class="value-badge">1</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">图标大小</div>
+        </div>
+        <div class="row-control">
+          <input type="range" id="iconSize" min="10" max="32" step="1" class="slider">
+          <span id="iconSizeVal" class="value-badge">16</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">禁用分页分隔线</div>
+          <div class="row-desc">不在每次拼接的新页面之间插入分隔提示</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="disablePageSeparator">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">禁用右键菜单</div>
+          <div class="row-desc">不在网页右键菜单中添加 AutoPager 的快捷操作项</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="disableContextMenu">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <div class="row-title">标记已加载的链接</div>
+          <div class="row-desc">已经通过自动翻页加载过的链接会加上删除线标记</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="markLoadedLinks">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+    </section>
+
+    <section id="siteinfo" class="card">
+      <div class="card-head">
+        <span class="card-icon">🗂️</span>
+        <div>
+          <h2>站点规则库 SITEINFO</h2>
+          <p class="card-desc">规则库每天自动更新一次，用于识别各网站的"下一页"位置，通常无需手动操作。</p>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button id="updateSiteinfo" class="btn btn-primary">立即更新</button>
+        <span id="siteinfoStatus" class="status-text">上次更新：—</span>
+      </div>
+    </section>
+
+    <section id="data" class="card">
+      <div class="card-head">
+        <span class="card-icon">💾</span>
+        <div>
+          <h2>数据管理</h2>
+          <p class="card-desc">备份、恢复或重置你的 AutoPager 设置。</p>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button id="exportSettings" class="btn">导出设置</button>
+        <button id="importSettingsBtn" class="btn">导入设置</button>
+        <input type="file" id="importSettingsFile" accept="application/json" hidden>
+        <button id="resetSettings" class="btn btn-danger">恢复默认设置</button>
+      </div>
+      <span id="dataStatus" class="status-text"></span>
+    </section>
+
+  </main>
+</div>
+<script src="common.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

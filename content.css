@@ -1,0 +1,66 @@
+/* ===== AutoPager 分页指示条 ===== */
+/* Reset table wrappers so the host's cell borders/padding/background don't leak
+   into our separator row. */
+.apg-sep-tbody > tr > td,
+.apg-sep-row > td {
+  border: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* The bar itself: a slim full-width band with a centred label flanked by rules
+   that flex to fill whatever width the container/row actually is. */
+.apg-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  margin: 12px 0 !important;
+  padding: 7px 16px !important;
+  font: 600 12px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "PingFang SC", "Microsoft YaHei", sans-serif !important;
+  color: #9aa3b2 !important;
+  letter-spacing: .12em !important;
+  white-space: nowrap !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.apg-bar::before,
+.apg-bar::after {
+  content: "" !important;
+  flex: 1 1 auto !important;
+  min-width: 20px !important;
+  height: 1px !important;
+  opacity: .5 !important;
+  background: linear-gradient(90deg, transparent, currentColor) !important;
+}
+.apg-bar::after {
+  background: linear-gradient(90deg, currentColor, transparent) !important;
+}
+
+.apg-txt { flex: 0 0 auto !important; }
+
+/* Loading — accent colour + spinner */
+.apg-bar-loading { color: #6366f1 !important; }
+.apg-bar-loading .apg-spin {
+  flex: 0 0 auto !important;
+  width: 12px !important;
+  height: 12px !important;
+  border: 2px solid rgba(99, 102, 241, .3) !important;
+  border-top-color: #6366f1 !important;
+  border-radius: 50% !important;
+  animation: apg-spin .6s linear infinite !important;
+}
+@keyframes apg-spin { to { transform: rotate(360deg); } }
+
+/* Done — muted grey; Error/End — soft red */
+.apg-bar-done { color: #9aa3b2 !important; }
+.apg-bar-error { color: #e0526b !important; }
+
+.apg-loaded-mark {
+  opacity: 0.55 !important;
+  text-decoration: line-through !important;
+}
