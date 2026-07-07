@@ -56,14 +56,30 @@ async function updateSiteInfo() {
   }
 }
 
+// 串行化菜单重建：removeAll/create 都是异步的，若多次调用交叠执行，
+// 后一次的 create 会撞上前一次刚建好的 id，报 "duplicate id" 错误。
+// 用一个 promise 队列把每次重建排队，确保上一次 create 完成后才开始下一次。
+var menuRebuildQueue = Promise.resolve();
 function rebuildContextMenus(settings) {
-  chrome.contextMenus.removeAll(function () {
-    if (settings && settings.disableContextMenu) return;
-    chrome.contextMenus.create({ id: 'autopager-load-next', title: 'AutoPager：立即加载下一页', contexts: ['page'] });
-    chrome.contextMenus.create({ id: 'autopager-toggle', title: 'AutoPager：暂停/继续本页翻页', contexts: ['page'] });
-    chrome.contextMenus.create({ id: 'autopager-exclude-site', title: 'AutoPager：排除此页面', contexts: ['page'] });
-    chrome.contextMenus.create({ id: 'autopager-options', title: 'AutoPager：打开设置', contexts: ['page'] });
+  menuRebuildQueue = menuRebuildQueue.then(function () {
+    return new Promise(function (resolve) {
+      chrome.contextMenus.removeAll(function () {
+        void chrome.runtime.lastError; // 吞掉可能的清理错误
+        if (settings && settings.disableContextMenu) { resolve(); return; }
+        function create(item) {
+          chrome.contextMenus.create(item, function () {
+            void chrome.runtime.lastError; // 吞掉可能的重复错误，避免 Unchecked lastError
+          });
+        }
+        create({ id: 'autopager-load-next', title: 'AutoPager：立即加载下一页', contexts: ['page'] });
+        create({ id: 'autopager-toggle', title: 'AutoPager：暂停/继续本页翻页', contexts: ['page'] });
+        create({ id: 'autopager-exclude-site', title: 'AutoPager：排除此页面', contexts: ['page'] });
+        create({ id: 'autopager-options', title: 'AutoPager：打开设置', contexts: ['page'] });
+        resolve();
+      });
+    });
   });
+  return menuRebuildQueue;
 }
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
@@ -138,6 +154,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (msg.type === 'UPDATE_SITEINFO') {
     updateSiteInfo().then(sendResponse);
     return true;
+  }
+
+  if (msg.type === 'OPEN_OPTIONS') {
+    chrome.runtime.openOptionsPage();
+    return false;
   }
 
   return false;

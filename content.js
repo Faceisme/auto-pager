@@ -321,7 +321,8 @@
       } else if (action === 'loadnow') {
         loadNextPage();
       } else if (action === 'options') {
-        chrome.runtime.openOptionsPage();
+        // openOptionsPage 在内容脚本上下文不可用，转交后台 service worker 打开
+        chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS' });
       }
     });
 
