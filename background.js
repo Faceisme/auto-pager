@@ -131,6 +131,18 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (!msg || !msg.type) return false;
 
   if (msg.type === 'FETCH_HTML') {
+    // 同源校验:只允许抓取与发起页面同源的 URL。页面里的"下一页"链接由
+    // 页面内容决定,若不加限制,恶意页面可诱导扩展带着用户 Cookie 抓取任意
+    // 跨源(例如已登录的其它站点)页面,再把内容拼进当前页,造成信息泄露。
+    var senderUrl = sender && (sender.origin || sender.url);
+    var sameOrigin = false;
+    try {
+      sameOrigin = !!senderUrl && new URL(msg.url).origin === new URL(senderUrl).origin;
+    } catch (e) { sameOrigin = false; }
+    if (!sameOrigin) {
+      sendResponse({ ok: false, error: '跨源翻页已被拦截(仅允许同源)' });
+      return false;
+    }
     fetch(msg.url, { credentials: 'include' })
       .then(async function (res) {
         if (!res.ok) { sendResponse({ ok: false, error: 'HTTP ' + res.status }); return; }

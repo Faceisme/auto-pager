@@ -357,6 +357,8 @@
       settings = Object.assign({}, APG.DEFAULT_SETTINGS, res.settings || {});
       if (!settings.enabled) return;
       if (APG.isExcluded(location.href, settings.excludePatterns)) return;
+      // 电商等风控敏感站点:固定禁用自动翻页,避免后台抓取被判定为爬虫。
+      if (APG.isRiskControlledSite(location.href)) return;
 
       var siteinfoList = res.siteinfoList || [];
       var matched = APG.findSiteInfoMatch(siteinfoList, location.href);

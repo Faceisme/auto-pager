@@ -20,6 +20,32 @@
     markLoadedLinks: false
   };
 
+  // 电商 / 风控敏感站点:这些站点会把"自动翻页"式的后台抓取判定为爬虫,
+  // 默认一律不在其上启用自动翻页。此列表与用户可编辑的排除列表相互独立,
+  // 不会被用户设置覆盖或误删,作为一道固定的安全兜底。
+  var RISK_CONTROL_HOSTS = [
+    'taobao.com', 'tmall.com', 'tmall.hk', '1688.com', 'alibaba.com',
+    'aliexpress.com', 'alipay.com', 'jd.com', 'jd.hk', 'pinduoduo.com',
+    'yangkeduo.com', 'suning.com', 'vip.com', 'dangdang.com', 'mogujie.com',
+    'xiaohongshu.com', 'amazon.com', 'amazon.cn'
+  ];
+
+  function hostMatchesPattern(host, pattern) {
+    host = String(host || '').toLowerCase();
+    pattern = String(pattern || '').toLowerCase();
+    if (!host || !pattern) return false;
+    return host === pattern || host.slice(-(pattern.length + 1)) === '.' + pattern;
+  }
+
+  function isRiskControlledSite(url) {
+    try {
+      var host = new URL(url).hostname;
+      return RISK_CONTROL_HOSTS.some(function (p) { return hostMatchesPattern(host, p); });
+    } catch (e) {
+      return false;
+    }
+  }
+
   var MAIN_CONTENT_SELECTORS = [
     'main', '[role="main"]', '#main', '#content', '#main-content',
     '.main-content', 'article', '#article', '.post-list',
@@ -188,6 +214,7 @@
     findMainContainer: findMainContainer,
     findGenericNextLink: findGenericNextLink,
     isSameContentContinuation: isSameContentContinuation,
-    resolveUrls: resolveUrls
+    resolveUrls: resolveUrls,
+    isRiskControlledSite: isRiskControlledSite
   };
 })(typeof window !== 'undefined' ? window : self);
